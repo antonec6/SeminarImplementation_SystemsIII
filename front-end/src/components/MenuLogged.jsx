@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router';
 import logo from '../assets/logo.png';
 import title from '../assets/title.png';
-import './Menu.css';
 
 export default function Menu() {
   return (
@@ -15,7 +14,7 @@ export default function Menu() {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/food-near-me">Food near me</NavLink>
         <NavLink to="/aboutus">About us</NavLink>
-        <NavLink to="/login" className="login-btn">Login</NavLink>
+        <NavLink to="/profile" className="login-btn">Profile</NavLink>
       </div>
     </nav>
   );

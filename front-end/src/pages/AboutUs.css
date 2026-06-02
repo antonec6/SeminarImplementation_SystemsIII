@@ -1,0 +1,122 @@
+/* --- CONTENEDOR ABOUT US --- */
+.about-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  box-sizing: border-box;
+}
+
+/* Sección de dos columnas (Flexbox que pasa a columna en móviles) */
+.about-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+  margin-bottom: 80px;
+  text-align: left; /* Alineación limpia para la descripción */
+}
+
+@media (max-width: 768px) {
+  .about-hero {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+  }
+}
+
+/* Columna Izquierda (Logo y Eslogan) */
+.about-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-logo {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.about-title {
+  max-width: 300px;
+}
+
+.about-slogan {
+  font-family: var(--heading);
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #618A7f; /* Tu verde identificativo */
+  font-style: italic;
+  text-align: center;
+}
+
+/* Columna Derecha (Títulos y textos) */
+.about-right {
+  flex: 1.5;
+}
+
+.about-title {
+  font-size: 2.8rem;
+  color: #618A7f;
+  margin-top: 0;
+  margin-bottom: 25px;
+}
+
+.about-text {
+  font-size: 1.1rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* --- SECCIÓN DE CONTACTO (ABAJO) --- */
+.contact-section {
+  padding: 50px 30px;
+  background: rgba(242, 235, 226, 0.4); /* Fondo beige sutil */
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.contact-section h2 {
+  font-size: 2rem;
+  color: #618A7f;
+  margin-bottom: 10px;
+}
+
+.contact-section > p {
+  color: var(--text);
+  margin-bottom: 40px;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+.contact-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-icon {
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+.contact-item strong {
+  font-size: 1.1rem;
+  color: var(--text-h);
+}
+
+.contact-item p {
+  color: var(--text);
+  font-size: 0.95rem;
+}

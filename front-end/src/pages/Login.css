@@ -1,0 +1,99 @@
+/* --- CONTENEDOR DE AUTENTICACIÓN (PANTALLA COMPLETA) --- */
+.auth-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh; /* Ocupa todo el alto de la pantalla */
+  background-color: #f2ebe2; /* Tu fondo beige general */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* La tarjeta gris centralizada de tu wireframe */
+.auth-card {
+  background-color: #e5e4e7; /* Un gris suave y limpio que contrasta con tu fondo */
+  width: 100%;
+  max-width: 450px;
+  padding: 50px 40px;
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  box-sizing: border-box;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Grupos de etiqueta + input */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.input-group label {
+  font-family: var(--heading);
+  font-size: 1.2rem;
+  color: var(--text-h);
+}
+
+.input-group input {
+  font-family: var(--sans);
+  font-size: 1rem;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* El recuadro azul que salía en tu captura al pinchar, ahora es tu verde corporativo */
+.input-group input:focus {
+  border-color: #618A7f;
+  box-shadow: 0 0 0 3px rgba(97, 138, 127, 0.2);
+}
+
+/* El botón negro prominente de tu wireframe, estilizado con tus transiciones */
+.auth-submit-btn {
+  font-family: var(--heading);
+  font-size: 1.2rem;
+  font-weight: 500;
+  background-color: #08060d; /* Negro puro como en tu diseño */
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 10px;
+}
+
+.auth-submit-btn:hover {
+  background-color: #1f1d24; /* Un tono ligeramente más claro al pasar el ratón */
+}
+
+.auth-submit-btn:active {
+  transform: scale(0.98);
+}
+
+/* Texto de "Click here" de la parte inferior */
+.auth-switch-text {
+  font-size: 0.95rem;
+  color: var(--text);
+  margin: 0;
+}
+
+/* El link ahora usa tu color vino de acción para guiar el ojo */
+.auth-switch-text a {
+  color: #974051;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-switch-text a:hover {
+  text-decoration: underline;
+}
