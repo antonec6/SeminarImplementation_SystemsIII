@@ -1,5 +1,5 @@
 
-.auth-container {
+.reg-container {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,18 +10,18 @@
 }
 
 
-.auth-card {
+.reg-card {
   background-color: #614051;
   width: 100%;
-  max-width: 500px;
-  max-height: 600px;
-  padding: 50px 40px;
+  max-width: 900px;
+  max-height: 700px;
+  padding: 30px 40px;
   border-radius: 16px;
   box-shadow: var(--shadow);
   box-sizing: border-box;
 }
 
-.auth-form {
+.reg-form {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -30,22 +30,21 @@
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
   text-align: left;
 }
 
 .input-group label {
   font-family: var(--heading);
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--text-h);
 }
 
 .input-group input {
   font-family: var(--sans);
-  font-size: 1rem;
-  color: var(--text);
+  font-size: 0.8rem;
   padding: 12px;
-  border: 1px solid var(--border);
+  border: 0.5px solid var(--border);
   border-radius: 6px;
   background-color: #ffffff;
   outline: none;
@@ -58,7 +57,7 @@
 }
 
 
-.auth-submit-btn {
+.reg-submit-btn {
   font-family: var(--heading);
   font-size: 1.2rem;
   font-weight: 500;
@@ -72,27 +71,27 @@
   margin-top: 10px;
 }
 
-.auth-submit-btn:hover {
+.reg-submit-btn:hover {
   background-color: #1f1d24;
 }
 
-.auth-submit-btn:active {
+.reg-submit-btn:active {
   transform: scale(0.98);
 }
 
-.auth-switch-text {
+.reg-switch-text {
   font-size: 0.95rem;
   color: var(--text);
   margin: 0;
 }
 
 
-.auth-switch-text a {
+.reg-switch-text a {
   color: #618A7f;
   font-weight: 600;
   text-decoration: none;
 }
 
-.auth-switch-text a:hover {
+.reg-switch-text a:hover {
   text-decoration: underline;
 }

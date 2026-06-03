@@ -57,6 +57,12 @@ export const getUserById = async (id: number): Promise<UserLogin[]> => {
   return rows;
 };
 
+export const deleteUser = async (id: number): Promise<ResultSetHeader> => {
+  const query = "DELETE FROM user WHERE id = ?";
+  const [result] = await pool.query<ResultSetHeader>(query, [id]);
+  return result;
+};
+
 // ========================================================
 // 3. FOOD LISTING
 // ========================================================

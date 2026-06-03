@@ -2,10 +2,12 @@ import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
 import usersRouter from "./routes/users.routes.js";
 import foodListingRouter from "./routes/food_listing.routes.js";
+import cors from "cors";
 
 const app = express();
 const port = Number(process.env.PORT) || 30096;
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

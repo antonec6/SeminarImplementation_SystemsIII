@@ -1,38 +1,43 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router";
 import Menu from "../components/Menu";
 import Home from "../pages/Home";
 import AboutUs from "../pages/AboutUs";
 import Login from "../pages/Login";
+import Register from "../pages/Register";
+import Profile from "../pages/Profile";
 
 const FoodNearMePlaceholder = () => <main style={{ padding: '20px' }}><h1>Food Near Me Page (Próximamente)</h1></main>;
 //const AboutPlaceholder = () => <main style={{ padding: '20px' }}><h1>About Us Page (Próximamente)</h1></main>;
 const LoginPlaceholder = () => <main style={{ padding: '20px' }}><h1>Login Page (Próximamente)</h1></main>;
 
 
-const MainLayout = () => {
-  return (
+export default function AppRouter() {
+
+  const [user, setUser] = useState(null);
+
+ 
+  const MainLayout = () => (
     <>
-      <Menu />
+      <Menu user={user} setUser={setUser} />
       <Outlet />
     </>
   );
-};
 
-export default function AppRouter() {
-  return (
+return (
     <BrowserRouter>
       <Routes>
-        
-        {/* With menu */}
+        {/*With menu */}
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/food-near-me" element={<FoodNearMePlaceholder />} />
           <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/food-near-me" element={<div>Food Near Me: coming soon</div>} />
+          <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
         </Route>
 
-        {/* Without menu*/}
-        <Route path="/login" element={<Login />} />
-
+        {/* Without Menu */}
+        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </BrowserRouter>
   );

@@ -3,7 +3,7 @@ import logo from '../assets/logo.png';
 import title from '../assets/title.png';
 import './Menu.css';
 
-export default function Menu() {
+export default function Menu({user, setUser}) {
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -13,9 +13,15 @@ export default function Menu() {
 
       <div className="navbar-links">
         <NavLink to="/">Home</NavLink>
-        <NavLink to="/food-near-me">Food near me</NavLink>
-        <NavLink to="/aboutus">About us</NavLink>
-        <NavLink to="/login" className="login-btn">Login</NavLink>
+        <NavLink to="/food-near-me">Food Near Me</NavLink>
+        <NavLink to="/aboutus">About Us</NavLink>
+        {user ? (
+          <>
+            <NavLink to="/profile">Profile</NavLink>
+          </>
+        ) : (
+          <NavLink to="/login">Login</NavLink>
+        )}
       </div>
     </nav>
   );
