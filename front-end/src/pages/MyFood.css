@@ -1,0 +1,268 @@
+/* =========================================================
+   1. PAGE HEADER & BACK ACTIONS
+   ========================================================= */
+.myfood-page-container {
+    /* FIX: Cambiado el margen fijo para centrar de forma idéntica a FoodNearMe */
+    width: min(1200px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 48px 0 72px;
+    box-sizing: border-box;
+}
+
+/* FIX: Eliminada la declaración duplicada de .listings-grid que tenías arriba */
+.myfood-page-container .listings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
+    grid-auto-flow: row;
+    align-items: stretch; /* Estira las tarjetas para que midan lo mismo en la fila */
+}
+
+.myfood-header {
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.back-profile-btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    color: #618a7f; /* Teal */
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    align-self: flex-start;
+    padding: 0;
+    margin-bottom: 8px;
+    transition: transform 0.2s ease;
+}
+
+.back-profile-btn:hover {
+    transform: translateX(-4px);
+}
+
+.page-subtitle {
+    margin: 0;
+    color: #777777;
+    font-size: 1.05rem;
+}
+
+/* =========================================================
+   2. CUSTOM MANAGER CARD MODIFICATIONS
+   ========================================================= */
+.myfood-card {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-width: 0;
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(97, 138, 127, 0.08);
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Efecto hover idéntico a FoodNearMe */
+.myfood-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(97, 138, 127, 0.28);
+    box-shadow: rgba(0, 0, 0, 0.12) 0 18px 30px -18px;
+}
+
+.myfood-card .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+    padding: 24px; /* Mismo padding exacto para igualar el tamaño */
+    box-sizing: border-box;
+    /* FIX: Sin 'height: 100%' para que no colapsen los botones */
+}
+
+/* Contenedor de botones de gestión en My Food */
+.myfood-actions {
+    margin-top: auto; /* Empuja los botones al fondo de la tarjeta de forma segura */
+    padding-top: 14px; /* Espacio de seguridad anticaídas */
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    gap: 12px;
+}
+
+/* =========================================================
+   STATUS BADGE CORE STRUCTURE
+   ========================================================= */
+.myfood-status {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-block;
+    border: 1px solid transparent;
+}
+
+/* =========================================================
+   DYNAMIC STATUS COLOR STATES
+   ========================================================= */
+
+/* State: Available (Elegant Soft Green) */
+.myfood-status.status-available {
+    background-color: rgba(97, 138, 127, 0.15);
+    color: #4a7067;
+    border-color: rgba(97, 138, 127, 0.25);
+}
+
+/* State: Requested (Warm Muted Yellow/Orange) */
+.myfood-status.status-requested {
+    background-color: rgba(234, 179, 8, 0.15);
+    color: #a16207;
+    border-color: rgba(234, 179, 8, 0.25);
+}
+
+/* State: Completed / Taken (Neutral Soft Gray) */
+.myfood-status.status-completed,
+.myfood-status.status-taken {
+    background-color: rgba(107, 114, 128, 0.12);
+    color: #4b5563;
+    border-color: rgba(107, 114, 128, 0.2);
+}
+
+/* =========================================================
+   3. MANAGEMENT ACTIONS (Edit / Delete buttons layout)
+   ========================================================= */
+.myfood-actions {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+}
+
+.myfood-edit-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid rgba(97, 138, 127, 0.4);
+    color: #618a7f;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.myfood-edit-btn:hover {
+    background: rgba(97, 138, 127, 0.08);
+}
+
+.myfood-delete-btn {
+    flex: 1;
+    background: #e63946; /* Destructive warning alert red */
+    color: #ffffff;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(230, 57, 70, 0.15);
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.myfood-delete-btn:hover {
+    background: #cb2d3a;
+    transform: translateY(-1px);
+}
+
+/* Empty fallback area layout */
+.no-listings-box {
+    grid-column: 1 / -1; /* Spans the full width of the grid */
+    text-align: center;
+    padding: 60px 20px;
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px dashed rgba(97, 64, 81, 0.2);
+    color: #666;
+}
+
+.post-now-btn {
+    background: #614051;
+    color: white;
+    border: 0;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    margin-top: 16px;
+    cursor: pointer;
+}
+
+/* Error wrapper styling */
+.myfood-error-container {
+    text-align: center;
+    margin: 100px auto;
+    max-width: 400px;
+    padding: 32px;
+    background: #fdfaf5;
+    border-radius: 16px;
+}
+
+/* =========================================================
+   4. ACCEPT / REJECT ACTIONS FOR REQUESTED FOOD ITEMS
+   ========================================================= */
+
+.myfood-accept-btn {
+    background-color: #618a7f;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 1;
+    transition: background 0.2s ease;
+}
+
+.myfood-accept-btn:hover {
+    background-color: #4a7067;
+}
+
+.myfood-reject-btn {
+    background-color: rgba(230, 57, 70, 0.1);
+    color: #cb2d3a;
+    border: 1px solid rgba(230, 57, 70, 0.2);
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.myfood-reject-btn:hover {
+    background-color: #cb2d3a;
+    color: #ffffff;
+}
+
+
+@media (max-width: 860px) {
+    .myfood-page-container {
+        width: min(100% - 20px, 1200px);
+        padding: 28px 0 56px;
+    }
+
+    .myfood-page-container .listings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .myfood-card {
+        flex-direction: column;
+    }
+}

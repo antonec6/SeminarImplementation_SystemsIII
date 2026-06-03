@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { allFoodListings, foodListingById, createFoodListing } from "../db/database.js";
+import { allFoodListings, foodListingById, createFoodListing, deleteFoodListing, updateFoodListing } from "../db/database.js";
 
 const router = Router();
 
@@ -40,6 +40,7 @@ const postFoodListing = async (req: Request, res: Response, next: NextFunction) 
     const dietaryDetails = req.body.dietary_details?.trim();
     const quantity = Number(req.body.quantity);
     const expirationDate = req.body.expiration_date;
+    const imageUrl = req.body.image_url?.trim();
     const userId = Number(req.body.user_id);
 
     if (!title || isNaN(quantity) || isNaN(userId)) {
@@ -50,7 +51,7 @@ const postFoodListing = async (req: Request, res: Response, next: NextFunction) 
       return;
     }
 
-    const queryResult = await createFoodListing(title, description, dietaryDetails, quantity, expirationDate, userId);
+    const queryResult = await createFoodListing(title, description, dietaryDetails, quantity, expirationDate, imageUrl, userId);
     
     if (queryResult.affectedRows === 1) {
       res.status(201).json({ success: true, message: "Food listing published successfully!" });
@@ -63,6 +64,84 @@ const postFoodListing = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
+const removeFoodListing = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const listingId = Number(req.params.id);
+
+    if (isNaN(listingId)) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid food listing ID.",
+      });
+      return;
+    }
+
+    // This function seamlessly handles listings with 0 requests AND listings with multiple requests
+    const queryResult = await deleteFoodListing(listingId);
+
+    if (queryResult.affectedRows === 1) {
+      res.status(200).json({
+        success: true,
+        message: "Food listing deleted successfully.",
+      });
+      return;
+    }
+
+    res.status(404).json({
+      success: false,
+      message: "Food listing not found.",
+    });
+  } catch (error) {
+    next(error); 
+  }
+};
+
+// Asegúrate de importar 'updateFoodListing' al principio del archivo junto a las demás funciones de db
+
+const editFoodListing = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const listingId = Number(req.params.id);
+    const { title, description, dietary_details, quantity, expiration_date, image_url } = req.body;
+
+    if (isNaN(listingId)) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid food listing ID.",
+      });
+      return;
+    }
+
+    // Process parameters cleanly
+    const queryResult = await updateFoodListing(
+      listingId,
+      title?.trim(),
+      description?.trim(),
+      dietary_details?.trim(),
+      Number(quantity),
+      expiration_date,
+      image_url?.trim()
+    );
+
+    if (queryResult.affectedRows === 1) {
+      res.status(200).json({
+        success: true,
+        message: "Food listing updated successfully.",
+      });
+      return;
+    }
+
+    res.status(404).json({
+      success: false,
+      message: "Food listing not found.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+router.put("/:id", editFoodListing); // OR router.patch("/:id", editFoodListing)
+router.delete("/:id", removeFoodListing);
 router.get("/", getAllFoodListings);
 router.get("/:id", getFoodListingById);
 router.post("/", postFoodListing);
