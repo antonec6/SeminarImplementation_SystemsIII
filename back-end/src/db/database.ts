@@ -64,7 +64,7 @@ export const getUserById = async (id: number): Promise<any[]> => {
     GROUP BY u.id
   `;
   const [rows] = await pool.query(query, [id]);
-  return rows;
+  return rows as any[];
 };
 
 export const deleteUser = async (id: number): Promise<ResultSetHeader> => {
@@ -303,7 +303,7 @@ export const getRequestersByListing = async (listingId: number): Promise<any[]> 
       AND m.user_id != fl.user_id 
   `;
   const [rows] = await pool.query(query, [listingId]);
-  return rows;
+  return rows as any[];
 };
 
 // ========================================================
@@ -330,7 +330,7 @@ export const getPrivateMessages = async (listingId: number, buyerId: number): Pr
     ORDER BY m.sent_at ASC
   `;
   const [rows] = await pool.query(query, [listingId, buyerId]);
-  return rows;
+  return rows as any[];
 };
 
 export const createMessage = async (content: string, userId: number, listingId: number): Promise<void> => {
