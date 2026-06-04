@@ -31,7 +31,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NUEVA: 3. How it works (Paso a paso) */}
+      {/* 3. How it works */}
       <section className="info-section">
         <h2 className="section-title">How it works</h2>
         <div className="steps-grid">
@@ -53,7 +53,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NUEVA: 4. Impact Statistics */}
+      {/*4. Impact Statistics */}
       <section className="impact-section">
         <h2 className="section-title-alt">Our Community Impact</h2>
         <div className="stats-grid">

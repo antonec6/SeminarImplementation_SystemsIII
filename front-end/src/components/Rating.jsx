@@ -13,7 +13,6 @@ export default function Rating({ request, user, onClose, onSuccess }) {
       return;
     }
 
-    // Seguridad: Si 'owner_id' no viene adjunto, usamos el 'user_id' asociado a la publicación original
     const targetUserId = request.owner_id || request.food_user_id;
 
     try {

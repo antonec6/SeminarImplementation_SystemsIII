@@ -3,17 +3,12 @@ import { createMessage, getPrivateMessages } from "../db/database.js";
 
 const router = Router();
 
-/* =========================================================
-   CONTROLLER FUNCTIONS
-   ========================================================= */
 
-// Fetch historical message logs filtered strictly by listing and buyer context rules
 const fetchChatHistory = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const listingId = Number(req.query.listingId);
     const buyerId = Number(req.query.buyerId);
 
-    // Validate essential composite channel parameters
     if (isNaN(listingId) || isNaN(buyerId)) {
       res.status(400).json({
         success: false,
@@ -22,7 +17,6 @@ const fetchChatHistory = async (req: Request, res: Response, next: NextFunction)
       return;
     }
 
-    // Call updated database filter matching seller and current requester context
     const chatHistory = await getPrivateMessages(listingId, buyerId);
 
     res.status(200).json(chatHistory);
@@ -31,7 +25,6 @@ const fetchChatHistory = async (req: Request, res: Response, next: NextFunction)
   }
 };
 
-// Send a new private message inside a specific listing context stream
 const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { content, user_id, food_listing_id } = req.body;
@@ -55,9 +48,7 @@ const sendMessage = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-/* =========================================================
-   EXPRESS ROUTER ATTACHMENTS
-   ========================================================= */
+
 router.get("/", fetchChatHistory);
 router.post("/", sendMessage);
 

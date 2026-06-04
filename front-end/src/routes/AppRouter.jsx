@@ -11,14 +11,12 @@ import MyFood from "../pages/MyFood";
 import MyRequests from "../pages/MyRequests";
 import Message from "../pages/Messages";
 
-const FoodNearMePlaceholder = () => <main style={{ padding: '20px' }}><h1>Food Near Me Page (Próximamente)</h1></main>;
-//const AboutPlaceholder = () => <main style={{ padding: '20px' }}><h1>About Us Page (Próximamente)</h1></main>;
-const LoginPlaceholder = () => <main style={{ padding: '20px' }}><h1>Login Page (Próximamente)</h1></main>;
-
-
 export default function AppRouter() {
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("shared_plate_user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
  
   const MainLayout = () => (
@@ -36,7 +34,7 @@ return (
           <Route path="/" element={<Home />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/food-near-me" element={<FoodNearMe user={user} />} />
-          <Route path="/profile" element={<Profile user={user} setUser={setUser} />} />
+          <Route path="/profile" element={<Profile user={user} setUser={setUser}/>} />
           <Route path="/my-food" element={<MyFood user={user} />} />
           <Route path="/my-requests" element={<MyRequests user={user} />} />
           <Route path="/messages" element={<Message user={user} />} />

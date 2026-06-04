@@ -1,11 +1,10 @@
-/* Navbar principal */
 .navbar {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 14px;
   padding: 10px 0px 0px;
-  background: rgba(242, 235, 226, 1) radial-gradient(circle at top left, rgba(170, 59, 255, 0.12), transparent 42%);
+  background: rgba(242, 235, 226, 1);
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;

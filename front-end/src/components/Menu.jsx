@@ -4,6 +4,7 @@ import title from '../assets/title.png';
 import './Menu.css';
 
 export default function Menu({user, setUser}) {
+
   return (
     <nav className="navbar">
       <div className="navbar-brand">
@@ -16,11 +17,11 @@ export default function Menu({user, setUser}) {
         <NavLink to="/food-near-me">Food Near Me</NavLink>
         <NavLink to="/aboutus">About Us</NavLink>
         {user ? (
-          <>
+          <div className="nav-profile-container">
             <NavLink to="/profile">Profile</NavLink>
-          </>
+          </div>
         ) : (
-          <NavLink to="/login">Login</NavLink>
+          <NavLink to="/login">Log In</NavLink>
         )}
       </div>
     </nav>

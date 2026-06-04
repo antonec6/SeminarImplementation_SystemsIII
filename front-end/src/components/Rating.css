@@ -33,7 +33,6 @@
 .modal-subtitle { margin: 0 0 24px 0; font-size: 0.92rem; color: #6c757d; }
 .modal-form { display: flex; flex-direction: column; gap: 20px; }
 
-/* Estilos de las Estrellas integradas */
 .modal-stars-section {
     display: flex;
     align-items: center;
@@ -64,6 +63,7 @@
     outline: none;
     resize: none;
     background-color: #f8f9fa;
+    color: #000000;
 }
 .modal-input-group textarea:focus { border-color: #618a7f; background-color: #ffffff; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; }

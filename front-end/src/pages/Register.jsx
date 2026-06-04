@@ -43,7 +43,7 @@ export default function Register() {
       }
 
       alert("Account created successfully!");
-      navigate("/login"); // Te manda al login al terminar
+      navigate("/login");
 
     } catch (err) {
       setError(err.message);

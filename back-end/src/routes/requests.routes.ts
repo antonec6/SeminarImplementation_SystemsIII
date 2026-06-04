@@ -4,14 +4,10 @@ import {
   allRequestsWithFoodDetails, 
   acceptRequestTransaction, 
   rejectRequestTransaction,
-  completeRequestTransaction // Asegúrate de añadir/exportar esta función en tu database.ts
+  completeRequestTransaction
 } from "../db/database.js"; 
 
 const router = Router();
-
-/* =========================================================
-   1. CONTROLLER FUNCTIONS (IMMEDIATE ROUTE HANDLERS)
-   ========================================================= */
 
 const submitRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -116,7 +112,6 @@ const completeRequest = async (req: Request, res: Response, next: NextFunction) 
       return;
     }
 
-    // Ejecuta la transacción en cascada dentro de tu archivo database.ts
     await completeRequestTransaction(requestId, foodListingId);
 
     res.status(200).json({
@@ -128,14 +123,11 @@ const completeRequest = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-/* =========================================================
-   2. EXPRESS ROUTER ATTACHMENTS
-   ========================================================= */
 
 router.post("/", submitRequest);
 router.get("/", getRequests);
 router.patch("/:id/accept", acceptRequest);
 router.patch("/:id/reject", rejectRequest);
-router.patch("/:id/complete", completeRequest); // <--- Nuevo endpoint mapeado en el formato estándar
+router.patch("/:id/complete", completeRequest);
 
 export default router;

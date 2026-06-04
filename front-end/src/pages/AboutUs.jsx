@@ -6,17 +6,16 @@ export default function AboutUs() {
   return (
     <main className="about-container">
       
-      {/* Sección Superior: Dos columnas */}
       <section className="about-hero">
         
-        {/* Columna Izquierda: Logo + Eslogan */}
+        {/* Logo + Slogan */}
         <div className="about-left">
           <img src={logo} alt="ReNourish Logo" className="about-logo" />
           <img src={title} alt="ReNourish Title" className="about-title" />
           <p className="about-slogan">— LESS WASTE, MORE IMPACT —</p>
         </div>
 
-        {/* Columna Derecha: Descripción */}
+        {/* Description */}
         <div className="about-right">
           <h1 className="about-title">About Us</h1>
           <p className="about-text">
@@ -29,7 +28,7 @@ export default function AboutUs() {
 
       </section>
 
-      {/* Sección Inferior: Datos de Contacto */}
+      {/* Contact */}
       <section className="contact-section">
         <h2>Get in Touch</h2>
         <p>Have questions, feedback, or want to partner with us? Drop us a line!</p>

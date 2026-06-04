@@ -16,7 +16,6 @@ export default function Messages({ user }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  // 1. Unified function to fetch chat messages with custom bilateral privacy variables
   const fetchChatLogs = async () => {
     if (!listingId || !buyerId) return;
     try {
@@ -24,26 +23,26 @@ export default function Messages({ user }) {
       if (response.ok) {
         const data = await response.json();
         setMessages(data);
+        
+        localStorage.setItem("last_messages_view", new Date().toISOString());
       }
     } catch (err) {
       console.error("Error loading secure private chat records:", err);
     }
   };
 
-  // 2. Initial load effect combined with a passive poll cycle to check for new external answers
   useEffect(() => {
+    localStorage.setItem("last_messages_view", new Date().toISOString());
+    
     fetchChatLogs();
 
-    // Set up a structural live updates interval pooling data every 3 seconds
     const chatIntervalId = setInterval(() => {
       fetchChatLogs();
     }, 3000);
 
-    // Wipe down interval loops when the user shifts away or closes down this screen viewport
     return () => clearInterval(chatIntervalId);
   }, [listingId, buyerId]);
 
-  // 3. Dispatch a new messaging row string execution
   const handleSend = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -61,7 +60,6 @@ export default function Messages({ user }) {
 
       if (response.ok) {
         setNewMessage("");
-        // FIX: Re-fetch logs passing the proper parameters instantly to refresh state data arrays
         fetchChatLogs(); 
       }
     } catch (err) {
@@ -74,7 +72,7 @@ export default function Messages({ user }) {
   return (
     <main className="chat-web-container-single">
       
-      {/* HEADER: Integrated Back Button, Avatar and Title into a single web row layout */}
+      {/* HEADER */}
       <div className="chat-header-single">
         <button onClick={() => navigate(-1)} className="header-back-btn">
           &larr; Back to Platform

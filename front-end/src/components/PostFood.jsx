@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./PostFood.css";
 
-// FIX: Added 'editItem' and 'onSuccess' to props for handling updates
 export default function PostFood({ isOpen, onClose, user, editItem = null, onSuccess }) {
   const [formData, setFormData] = useState({
     title: "",
@@ -14,22 +13,18 @@ export default function PostFood({ isOpen, onClose, user, editItem = null, onSuc
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sync modal state whenever it opens or when editItem changes
   useEffect(() => {
     if (isOpen) {
       if (editItem) {
-        // Mode: Edit - Pre-populate form with existing database records
         setFormData({
           title: editItem.title || "",
           description: editItem.description || "",
           dietary_details: editItem.dietary_details || "",
           quantity: editItem.quantity || 1,
-          // Format SQL timestamp string safely into YYYY-MM-DD for the date input field
           expiration_date: editItem.expiration_date ? editItem.expiration_date.split("T")[0] : "",
           image_url: editItem.image_url || ""
         });
       } else {
-        // Mode: Create - Reset state to initial empty structure
         setFormData({ title: "", description: "", dietary_details: "", quantity: 1, expiration_date: "", image_url: "" });
       }
     }
@@ -45,7 +40,6 @@ export default function PostFood({ isOpen, onClose, user, editItem = null, onSuc
     setIsSubmitting(true);
 
     try {
-      // Determine target API endpoint and HTTP method dynamically based on context mode
       const url = editItem 
         ? `http://88.200.63.148:30096/food-listings/${editItem.id}`
         : "http://88.200.63.148:30096/food-listings";
@@ -76,7 +70,7 @@ export default function PostFood({ isOpen, onClose, user, editItem = null, onSuc
 
       alert(editItem ? "Food listing updated successfully!" : "Food posted successfully!");
       
-      if (onSuccess) onSuccess(); // Notify parent window to trigger UI refreshing pipeline
+      if (onSuccess) onSuccess();
       onClose(); 
       
     } catch (error) {
@@ -91,7 +85,6 @@ export default function PostFood({ isOpen, onClose, user, editItem = null, onSuc
   return (
     <div className="post-modal-overlay" onClick={onClose}>
       <div className="post-modal-container" onClick={(e) => e.stopPropagation()}>
-        {/* Dynamic header title based on modal behavior context state */}
         <h2 className="post-modal-title">{editItem ? "Edit Food Listing" : "Create Post"}</h2>
         
         <form onSubmit={handleSubmit} className="post-form">

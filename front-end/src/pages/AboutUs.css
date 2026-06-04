@@ -1,4 +1,4 @@
-/* --- CONTENEDOR ABOUT US --- */
+
 .about-container {
   width: 100%;
   max-width: 1200px;
@@ -7,14 +7,13 @@
   box-sizing: border-box;
 }
 
-/* Sección de dos columnas (Flexbox que pasa a columna en móviles) */
 .about-hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 60px;
   margin-bottom: 80px;
-  text-align: left; /* Alineación limpia para la descripción */
+  text-align: left;
 }
 
 @media (max-width: 768px) {
@@ -25,7 +24,6 @@
   }
 }
 
-/* Columna Izquierda (Logo y Eslogan) */
 .about-left {
   flex: 1;
   display: flex;
@@ -49,12 +47,11 @@
   font-family: var(--heading);
   font-size: 0.8rem;
   font-weight: 500;
-  color: #618A7f; /* Tu verde identificativo */
+  color: #618A7f;
   font-style: italic;
   text-align: center;
 }
 
-/* Columna Derecha (Títulos y textos) */
 .about-right {
   flex: 1.5;
 }
@@ -73,10 +70,9 @@
   margin-bottom: 20px;
 }
 
-/* --- SECCIÓN DE CONTACTO (ABAJO) --- */
 .contact-section {
   padding: 50px 30px;
-  background: rgba(242, 235, 226, 0.4); /* Fondo beige sutil */
+  background: rgba(242, 235, 226, 0.4);
   border-radius: 24px;
   border: 1px solid var(--border);
   text-align: center;

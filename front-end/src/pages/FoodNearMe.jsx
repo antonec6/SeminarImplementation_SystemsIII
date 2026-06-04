@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import FoodList from "../components/FoodList"; // Adjust path if necessary
+import FoodList from "../components/FoodList";
 import "./FoodNearMe.css";
 
 export default function FoodNearMe({ user }) {
@@ -8,12 +8,10 @@ export default function FoodNearMe({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
-  // Single clean state controlling which food item pop-up details to show
   const [selectedListing, setSelectedListing] = useState(null);
   
   const navigate = useNavigate();
 
-  // Fetch listings from the backend database
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -35,9 +33,8 @@ export default function FoodNearMe({ user }) {
     fetchListings();
   }, []);
 
-  // Handles submitting a new food request to the backend database
   const handleRequestClick = async (e, listingId) => {
-    e.stopPropagation(); // Prevents opening the details modal layer
+    e.stopPropagation();
     
     if (!user) {
       alert("You must be logged in to request food.");
@@ -52,8 +49,8 @@ export default function FoodNearMe({ user }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: user.id,           // ID of the logged-in requester
-          food_listing_id: listingId  // ID of the food item being claimed
+          user_id: user.id,     
+          food_listing_id: listingId
         }),
       });
 
@@ -75,17 +72,14 @@ export default function FoodNearMe({ user }) {
       return;
     }
     
-    // STRATEGIC FIX: Since the current logged-in user is browsing, they are the buyer
     const listingId = listing.id;
     const buyerId = user.id; // Your logged-in user context object
     const title = encodeURIComponent(listing.title || "Food Chat");
     const image = encodeURIComponent(listing.image_url || "");
     
-    // Route navigation string carrying both required tracking parameters safely
     navigate(`/messages?listingId=${listingId}&buyerId=${buyerId}&title=${title}&image=${image}`);
   };
 
-  // Helper function to truncate long descriptions gracefully
   const truncateText = (text, maxLength = 80) => {
     if (!text) return "No description provided.";
     if (text.length <= maxLength) return text;
@@ -95,7 +89,6 @@ export default function FoodNearMe({ user }) {
   if (loading) return <div className="loading">Loading available food...</div>;
   if (error) return <div className="error-message">Error: {error}</div>;
 
-  // CRITICAL FILTER: Exclude own listings AND any post that is already 'requested' or locked
   const itemsToDisplay = user 
     ? listings.filter(item => item.user_id !== user.id && item.status === 'available') 
     : listings.filter(item => item.status === 'available');
@@ -109,7 +102,6 @@ export default function FoodNearMe({ user }) {
           <p>No food available at the moment. Check back later!</p>
         ) : (
           itemsToDisplay.map((item) => (
-            /* Clicking anywhere on the card opens the details modal pop-up */
             <div key={item.id} className="food-card" onClick={() => setSelectedListing(item)}>
               
               {/* Left Column: Image Area */}
@@ -156,7 +148,7 @@ export default function FoodNearMe({ user }) {
                 
                 <p className="card-quantity">Quantity available: {item.quantity}</p>
 
-                {/* Actions container pushes itself down perfectly */}
+                {/* Actions container*/}
                 <div className="card-actions">
                   {user ? (
                     <div className="logged-in-actions">
@@ -184,7 +176,7 @@ export default function FoodNearMe({ user }) {
         )}
       </div>
 
-      {/* Modular pop-up modal layer view engine */}
+      {/* Modular pop-up */}
       <FoodList 
         listing={selectedListing} 
         onClose={() => setSelectedListing(null)} 

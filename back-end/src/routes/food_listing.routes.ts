@@ -5,14 +5,10 @@ import {
   createFoodListing, 
   deleteFoodListing, 
   updateFoodListing,
-  getRequestersByListing // Added from database models to serve active chats mapping queries
+  getRequestersByListing
 } from "../db/database.js";
 
 const router = Router();
-
-/* =========================================================
-   1. CONTROLLER FUNCTIONS (IMMEDIATE ROUTE HANDLERS)
-   ========================================================= */
 
 const getFoodListings = async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -146,7 +142,6 @@ const editFoodListing = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-// Fetch all active request transactions to map isolated private chat options
 const fetchListingChatsMenu = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const listingId = Number(req.params.id);
@@ -166,14 +161,10 @@ const fetchListingChatsMenu = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-/* =========================================================
-   2. EXPRESS ROUTER ATTACHMENTS
-   ========================================================= */
 
-// FIXED: Cleaned redundant controllers and set direct structural hierarchy maps
 router.get("/", getFoodListings);
 router.get("/:id", getFoodListingById);
-router.get("/:id/chats", fetchListingChatsMenu); // New isolated dynamic channel router endpoint mapping
+router.get("/:id/chats", fetchListingChatsMenu);
 router.post("/", postFoodListing);
 router.put("/:id", editFoodListing);
 router.delete("/:id", removeFoodListing);

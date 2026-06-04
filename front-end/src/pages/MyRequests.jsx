@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import Rating from "../components/Rating"; // Standard unified rating pop-up modal view reference
+import Rating from "../components/Rating";
 import "./MyRequests.css";
 
 export default function MyRequests({ user }) {
@@ -8,23 +8,22 @@ export default function MyRequests({ user }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   
-  // State elements to control the operational parameters of the review modal portal
+  const [hiddenRequests, setHiddenRequests] = useState(() => {
+    const saved = localStorage.getItem(`hidden_requests_${user?.id}`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [activeRequestToRate, setActiveRequestToRate] = useState(null);
   const [ratedRequests, setRatedRequests] = useState({});
   
   const navigate = useNavigate();
 
-  // Fetch all user requested listing transactions from backend infrastructure
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await fetch("http://88.200.63.148:30096/requests");
         const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error("Could not retrieve your food requests.");
-        }
-
+        if (!response.ok) throw new Error("Could not retrieve your food requests.");
         setRequests(data);
       } catch (err) {
         setError(err.message);
@@ -33,12 +32,16 @@ export default function MyRequests({ user }) {
       }
     };
 
-    if (user) {
-      fetchRequests();
-    }
+    if (user) fetchRequests();
   }, [user]);
 
-  // Guard clause: Evict unauthenticated visitors securely
+  const handleHideRequest = (e, requestId) => {
+    e.stopPropagation();
+    const updatedHidden = [...hiddenRequests, requestId];
+    setHiddenRequests(updatedHidden);
+    localStorage.setItem(`hidden_requests_${user.id}`, JSON.stringify(updatedHidden));
+  };
+
   if (!user) {
     return (
       <div className="myrequests-error-container">
@@ -51,28 +54,21 @@ export default function MyRequests({ user }) {
   if (loading) return <div className="loading">Loading your requests...</div>;
   if (error) return <div className="error-message">Error: {error}</div>;
 
-  // Render filter constraints mapping entries submitted strictly by current user context
-  const myRequests = requests.filter((req) => req.user_id === user.id);
+  const myRequests = requests.filter((req) => req.user_id === user.id && !hiddenRequests.includes(req.id));
 
-  // Secure cross-navigation channel redirecting the users to the message center platform
   const handleMessageClick = (e, request) => {
     e.stopPropagation(); 
-    
     if (!request || !request.food_listing_id || !request.user_id) {
       alert("Error: Core listing or requester parameters are missing.");
       return;
     }
-    
     const listingId = request.food_listing_id;
-    const buyerId = request.user_id; // The user who submitted this specific food request
+    const buyerId = request.user_id; 
     const title = encodeURIComponent(request.title || "Private Food Chat");
     const image = encodeURIComponent(request.image_url || ""); 
-    
-    // Inject both tracking properties into the query navigation string safely
     navigate(`/messages?listingId=${listingId}&buyerId=${buyerId}&title=${title}&image=${image}`);
   };
 
-  // Local sync handler keeping states active upon successful submission payloads
   const handleRatingSuccess = (requestId) => {
     setRatedRequests(prev => ({ ...prev, [requestId]: true }));
   };
@@ -96,17 +92,24 @@ export default function MyRequests({ user }) {
           </div>
         ) : (
           myRequests.map((request) => {
-            // RELATIONAL RULES: Verification states checking database transaction status parameters
             const isRejected = (request.status || "").toLowerCase() === "rejected";
             const isCollected = (request.food_status || "").toLowerCase() === "completed" && !isRejected;
-            
-            // LOCK OUT RULES: Block ratings duplicate attempts if local or remote states flag it as rated
             const alreadyRated = ratedRequests[request.id] || request.already_rated === 1;
 
             return (
               <div key={request.id} className="request-card">
                 
-                {/* Left Column: Image Thumbs Renderer */}
+                {/* Botón X con clase CSS dedicada */}
+                {(isRejected || isCollected) && (
+                  <button 
+                    onClick={(e) => handleHideRequest(e, request.id)}
+                    className="dismiss-btn"
+                    title="Dismiss from view"
+                  >
+                    ✕
+                  </button>
+                )}
+
                 <div className="request-image-container">
                   {request.image_url ? (
                     <img src={request.image_url} alt={request.title} className="request-img" />
@@ -115,40 +118,31 @@ export default function MyRequests({ user }) {
                   )}
                 </div>
 
-                {/* Right Column: Unified structural layout wrapping texts and triggers together */}
                 <div className="request-content">
                   <div className="request-card-header">
-                    <h3 className="request-title">{request.title || "Food Item"}</h3>
+                    <h3 className="request-title">
+                      {request.title || "Food Item"}
+                    </h3>
                     
-                    {/* Floating contextual viewport interface mapping buttons right aligned */}
                     <div className="status-actions-wrapper">
-                      {/* Only allow messaging operations if the item is not rejected or archived */}
                       {!isRejected && !isCollected && (
-                        <button 
-                          onClick={(e) => handleMessageClick(e, request)} 
-                          className="message-btn"
-                        >
+                        <button onClick={(e) => handleMessageClick(e, request)} className="message-btn">
                           Message
                         </button>
                       )}
 
-                      {/* Display interactive feedback submission link if handover process is archived */}
                       {isCollected && (
                         <div className="rating-container">
                           {alreadyRated ? (
                             <span className="rating-done-text">Rated ✓</span>
                           ) : (
-                            <button 
-                              onClick={() => setActiveRequestToRate(request)}
-                              className="rate-action-btn"
-                            >
+                            <button onClick={() => setActiveRequestToRate(request)} className="rate-action-btn">
                               Rate
                             </button>
                           )}
                         </div>
                       )}
 
-                      {/* Explicit state tokens reflecting live backend status variables */}
                       <span className={`request-status status-${isRejected ? "rejected" : isCollected ? "completed" : (request.status || "pending").toLowerCase()}`}>
                         {isRejected ? "Rejected" : isCollected ? "Collected" : (request.status || "Pending")}
                       </span>
@@ -173,7 +167,6 @@ export default function MyRequests({ user }) {
         )}
       </div>
 
-      {/* Structured review overlay portal layer injection */}
       {activeRequestToRate && (
         <Rating
           request={activeRequestToRate}

@@ -30,6 +30,8 @@ export default function Login({ setUser }) {
         throw new Error(data.message || "Incorrect email or password.");
       }
 
+      localStorage.setItem("shared_plate_user", JSON.stringify(data.user));
+
       setUser(data.user); 
       
       navigate("/");

@@ -1,8 +1,5 @@
-/* =========================================================
-   1. PAGE HEADER & BACK ACTIONS
-   ========================================================= */
+
 .myfood-page-container {
-    /* FIX: Cambiado el margen fijo para centrar de forma idéntica a FoodNearMe */
     width: min(1200px, calc(100% - 32px));
     margin: 0 auto;
     padding: 48px 0 72px;
@@ -16,7 +13,7 @@
     width: 100%;
     box-sizing: border-box;
     grid-auto-flow: row;
-    align-items: stretch; /* Estira las tarjetas para que midan lo mismo en la fila */
+    align-items: stretch;
 }
 
 .myfood-header {
@@ -30,7 +27,7 @@
     appearance: none;
     background: transparent;
     border: 0;
-    color: #618a7f; /* Teal */
+    color: #618a7f;
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
@@ -44,16 +41,21 @@
     transform: translateX(-4px);
 }
 
+.page-title {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #618a7f;
+}
+
 .page-subtitle {
     margin: 0;
     color: #777777;
     font-size: 1.05rem;
 }
 
-/* =========================================================
-   2. CUSTOM MANAGER CARD MODIFICATIONS
-   ========================================================= */
 .myfood-card {
+    position: relative;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -67,11 +69,34 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Efecto hover idéntico a FoodNearMe */
 .myfood-card:hover {
     transform: translateY(-4px);
     border-color: rgba(97, 138, 127, 0.28);
     box-shadow: rgba(0, 0, 0, 0.12) 0 18px 30px -18px;
+}
+
+.card-image-container {
+    width: 140px;
+    min-width: 140px;
+    background: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-size: 0.9rem;
+    text-transform: uppercase;
 }
 
 .myfood-card .card-content {
@@ -80,24 +105,57 @@
     gap: 12px;
     min-width: 0;
     flex: 1;
-    padding: 24px; /* Mismo padding exacto para igualar el tamaño */
+    padding: 24px; 
     box-sizing: border-box;
-    /* FIX: Sin 'height: 100%' para que no colapsen los botones */
 }
 
-/* Contenedor de botones de gestión en My Food */
-.myfood-actions {
-    margin-top: auto; /* Empuja los botones al fondo de la tarjeta de forma segura */
-    padding-top: 14px; /* Espacio de seguridad anticaídas */
-    width: 100%;
-    box-sizing: border-box;
+.card-header {
     display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 12px;
 }
 
-/* =========================================================
-   STATUS BADGE CORE STRUCTURE
-   ========================================================= */
+.card-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2d3748;
+    padding-right: 24px;
+}
+
+.card-description-label {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #718096;
+}
+
+.card-description {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #4a5568;
+    line-height: 1.4;
+}
+
+.read-more-link {
+    color: #618a7f;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.myfood-meta-row {
+    display: flex;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: #4a5568;
+    margin: 4px 0;
+}
+
+.myfood-meta-row p {
+    margin: 0;
+}
+
 .myfood-status {
     font-size: 0.78rem;
     font-weight: 700;
@@ -107,27 +165,21 @@
     letter-spacing: 0.06em;
     display: inline-block;
     border: 1px solid transparent;
+    white-space: nowrap;
 }
 
-/* =========================================================
-   DYNAMIC STATUS COLOR STATES
-   ========================================================= */
-
-/* State: Available (Elegant Soft Green) */
 .myfood-status.status-available {
     background-color: rgba(97, 138, 127, 0.15);
     color: #4a7067;
     border-color: rgba(97, 138, 127, 0.25);
 }
 
-/* State: Requested (Warm Muted Yellow/Orange) */
 .myfood-status.status-requested {
     background-color: rgba(234, 179, 8, 0.15);
     color: #a16207;
     border-color: rgba(234, 179, 8, 0.25);
 }
 
-/* State: Completed / Taken (Neutral Soft Gray) */
 .myfood-status.status-completed,
 .myfood-status.status-taken {
     background-color: rgba(107, 114, 128, 0.12);
@@ -135,13 +187,97 @@
     border-color: rgba(107, 114, 128, 0.2);
 }
 
-/* =========================================================
-   3. MANAGEMENT ACTIONS (Edit / Delete buttons layout)
-   ========================================================= */
+.active-chats-wrapper {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.view-chats-btn {
+    background-color: #614051; 
+    color: #ffffff;
+    padding: 8px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 300;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-family: var(--font-primary), sans-serif;
+}
+
+.view-chats-btn:hover {
+    background-color: #4a303e;
+}
+
+.chats-dropdown-container {
+    background: #fafafb;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 4px;
+}
+
+.dropdown-title {
+    margin: 0 0 8px 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.no-chats-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.chats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.chat-channel-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-channel-row:hover {
+    border-color: #614051;
+    background: rgba(97, 64, 81, 0.02);
+}
+
+.chat-user-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.open-chat-trigger {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #614051;
+}
+
 .myfood-actions {
+    margin-top: auto;
+    padding-top: 14px;
+    width: 100%;
+    box-sizing: border-box;
     display: flex;
     gap: 12px;
-    width: 100%;
 }
 
 .myfood-edit-btn {
@@ -164,7 +300,7 @@
 
 .myfood-delete-btn {
     flex: 1;
-    background: #e63946; /* Destructive warning alert red */
+    background: #e63946;
     color: #ffffff;
     border: 0;
     padding: 10px 16px;
@@ -182,25 +318,88 @@
     transform: translateY(-1px);
 }
 
-.message-btn {
-	appearance: none;
-	border: 0;
-	box-sizing: border-box;
-	display: block;
-	border-radius: 14px;
-	padding: 12px 18px;
-	font: inherit;
-	font-weight: 700;
-	cursor: pointer;
-	transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
-	background: #614051;
-	color: #ffffff;
-	border: 1px solid rgba(97, 138, 127, 0.22);
+.myfood-accept-btn {
+    background-color: #618a7f;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex: 1;
+    font-size: 0.95rem;
 }
 
-/* Empty fallback area layout */
+.myfood-accept-btn:hover {
+    background-color: #4a7067;
+}
+
+.myfood-reject-btn {
+    background-color: rgba(230, 57, 70, 0.1);
+    color: #cb2d3a;
+    border: 1px solid rgba(230, 57, 70, 0.2);
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.myfood-reject-btn:hover {
+    background-color: #cb2d3a;
+    color: #ffffff;
+}
+
+.myfood-complete-btn {
+    flex: 1;
+    background-color: #618a7f;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.myfood-complete-btn:hover {
+    background-color: #4a7067;
+}
+
+.completed-handover-badge {
+    color: #618a7f; 
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    padding: 4px 0;
+}
+
+.dismiss-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: transparent;
+    color: #94a3b8;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 4px;
+    line-height: 1;
+    z-index: 10;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.dismiss-btn:hover {
+    color: #475569; 
+    transform: scale(1.1);
+}
+
 .no-listings-box {
-    grid-column: 1 / -1; /* Spans the full width of the grid */
+    grid-column: 1 / -1;
     text-align: center;
     padding: 60px 20px;
     background: #ffffff;
@@ -220,7 +419,6 @@
     cursor: pointer;
 }
 
-/* Error wrapper styling */
 .myfood-error-container {
     text-align: center;
     margin: 100px auto;
@@ -229,43 +427,6 @@
     background: #fdfaf5;
     border-radius: 16px;
 }
-
-/* =========================================================
-   4. ACCEPT / REJECT ACTIONS FOR REQUESTED FOOD ITEMS
-   ========================================================= */
-
-.myfood-accept-btn {
-    background-color: #618a7f;
-    color: #ffffff;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-    transition: background 0.2s ease;
-}
-
-.myfood-accept-btn:hover {
-    background-color: #4a7067;
-}
-
-.myfood-reject-btn {
-    background-color: rgba(230, 57, 70, 0.1);
-    color: #cb2d3a;
-    border: 1px solid rgba(230, 57, 70, 0.2);
-    padding: 10px 16px;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.myfood-reject-btn:hover {
-    background-color: #cb2d3a;
-    color: #ffffff;
-}
-
 
 @media (max-width: 860px) {
     .myfood-page-container {
@@ -279,5 +440,10 @@
 
     .myfood-card {
         flex-direction: column;
+    }
+    
+    .card-image-container {
+        width: 100%;
+        height: 200px;
     }
 }
