@@ -61,7 +61,9 @@ export default function Profile({ user, onLogOut }) {
             <div className="profile-avatar">
               {user.first_name ? user.first_name.charAt(0).toUpperCase() : "U"}
             </div>
-            <span className="profile-avg-rating">Avg. rating: x.x</span>
+            <div className="profile-avg-rating ">
+                <span className="numeric-avg"> ({Number(user.rating_avg).toFixed(1)} / 5)</span>
+            </div>
           </div>
 
           <div className="user-details-fields">

@@ -1,180 +1,161 @@
-/* =========================================================
-   1. PAGE WRAPPER & GRID CONFIGURATION
-   ========================================================= */
 .myrequests-page-container {
-    width: min(1200px, calc(100% - 32px));
+  width: min(1200px, calc(100% - 32px));
     margin: 0 auto;
     padding: 48px 0 72px;
     box-sizing: border-box;
 }
 
 .myrequests-header {
-    margin-bottom: 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .requests-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-    width: 100%;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+  gap: 20px;
 }
 
-/* =========================================================
-   2. CARD LAYOUT SPECIFICS
-   ========================================================= */
 .request-card {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    background: #ffffff;
-    border-radius: 24px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(97, 138, 127, 0.06);
-    box-sizing: border-box;
-    overflow: hidden;
+  display: flex;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  height: 160px; /* Altura fija controlada */
+  position: relative;
 }
 
+/* Columna Izquierda: Imagen */
 .request-image-container {
-    flex: 0 0 150px;
-    width: 150px;
-    min-height: 150px;
-    background: #fdfaf5;
+  width: 140px;
+  min-width: 140px;
+  height: 100%;
 }
 
-.request-img,
-.request-image-placeholder {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.request-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .request-image-placeholder {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: rgba(97, 138, 127, 0.5);
-    background: linear-gradient(135deg, #f2ebe2, #ffffff);
+  width: 100%;
+  height: 100%;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-weight: bold;
 }
 
+/* Columna Derecha: Contenido principal elástico */
 .request-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    flex: 1;
-    padding: 24px;
-    box-sizing: border-box;
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0; /* Evita que los textos con "ellipsis" o largos rompan el flex */
 }
 
 .request-card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .request-title {
-    margin: 0;
-    font-size: 1.3rem;
-    color: #618a7f;
+  margin: 0;
+  font-size: 1.2rem;
+  color: #2b2d42;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Si el título es gigante, se corta con elegancia */
 }
 
+/* Contenedor de Botones y Estados */
+.status-actions-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0; /* Impide que los botones se encojan */
+}
+
+.message-btn {
+  background: #5e4b56;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.message-btn:hover {
+  background: #4a3b44;
+}
+
+.rate-action-btn {
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.rate-action-btn:hover {
+  background: #222222;
+}
+
+.rating-done-text {
+  color: #618a7f;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #eaf2f0;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* Badges de Estado */
+.request-status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.status-pending { background: #ffe3a8; color: #b07d00; }
+.status-accepted { background: #d1e7dd; color: #0f5132; }
+.status-rejected { background: #f8d7da; color: #842029; }
+.status-completed { background: #dbf0eb; color: #1d4d41; }
+
+/* Caja inferior de detalles */
 .request-details-box {
-    font-size: 0.9rem;
-    color: #555555;
+  margin-top: 5px;
+}
+
+.request-details-box p {
+  margin: 2px 0;
+  font-size: 0.85rem;
+  color: #666;
 }
 
 .request-info-text {
-    margin-top: 8px;
-    font-size: 0.85rem;
-    color: #888888;
-    line-height: 1.4;
-}
-
-/* =========================================================
-   3. DYNAMIC STATUS ENUM BADGES
-   ========================================================= */
-.request-status {
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 5px 12px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/* Status state: Pending (Muted Yellow/Gold) */
-.request-status.status-pending {
-    background: rgba(234, 179, 8, 0.15);
-    color: #a16207;
-}
-
-/* Status state: Accepted (Soft Healthy Green) */
-.request-status.status-accepted {
-    background: rgba(97, 138, 127, 0.15);
-    color: #4a7067;
-}
-
-/* Status state: Rejected (Soft Warning Crimson Red) */
-.request-status.status-rejected {
-    background: rgba(230, 57, 70, 0.12);
-    color: #cb2d3a;
-}
-
-/* =========================================================
-   4. FALLBACK EMPTY & ERROR HANDLING STATES
-   ========================================================= */
-.no-requests-box {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 60px 20px;
-    background: #ffffff;
-    border-radius: 24px;
-    color: #666;
-}
-
-.explore-now-btn {
-    background: #614051;
-    color: white;
-    border: 0;
-    padding: 12px 28px;
-    border-radius: 12px;
-    font-weight: 700;
-    margin-top: 16px;
-    cursor: pointer;
-}
-
-.myrequests-error-container {
-    text-align: center;
-    margin: 100px auto;
-    max-width: 400px;
-    padding: 32px;
-    background: #fdfaf5;
-    border-radius: 16px;
-}
-
-/* =========================================================
-   5. RESPONSIVE RECONSTRUCTION QUERIES
-   ========================================================= */
-@media (max-width: 860px) {
-    .requests-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 480px) {
-    .request-card {
-        flex-direction: column;
-    }
-    .request-image-container {
-        width: 100%;
-        height: 140px;
-        min-height: 140px;
-    }
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
 }

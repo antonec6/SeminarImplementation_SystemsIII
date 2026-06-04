@@ -11,16 +11,21 @@ export default function MyFood({ user }) {
   
   // State for the modular pop-up detail view
   const [selectedListing, setSelectedListing] = useState(null);
+  const [itemToEdit, setItemToEdit] = useState(null); 
+  
+  // NEW: State trackers to toggle active private chats dropdown displays per food item card
+  const [activeDropdownId, setActiveDropdownId] = useState(null);
+  const [activeChats, setActiveChats] = useState([]);
   
   const navigate = useNavigate();
 
-const fetchListings = async () => {
+  const fetchListings = async () => {
     try {
       const response = await fetch("http://88.200.63.148:30096/food-listings");
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error("Could not retrieve your food listings.");
+        throw new Error("Could not retrieve your food listings with request details.");
       }
 
       setListings(data);
@@ -31,13 +36,13 @@ const fetchListings = async () => {
     }
   };
 
-  // 2. EL EFFECT QUEDA SÚPER LIMPIO: Solo la ejecuta al montar la página
+  // Run initial fetch on component lifecycle mount
   useEffect(() => {
     fetchListings();
   }, []);
 
   // Action to delete a listing with a confirmation dialog
-const handleDeleteClick = async (e, listingId) => {
+  const handleDeleteClick = async (e, listingId) => {
     e.stopPropagation(); // Prevents opening the modal pop-up
     const confirmed = window.confirm("Are you sure you want to delete this listing? This will also remove any related requests.");
     
@@ -49,12 +54,10 @@ const handleDeleteClick = async (e, listingId) => {
 
         const data = await response.json();
 
-        // FIX: Verify via our unified data.success parameter rule
         if (!response.ok || data.success === false) {
           throw new Error(data.message || "Failed to delete the listing.");
         }
 
-        // Optimistically remove the deleted listing from the local state
         setListings((prev) => prev.filter((item) => item.id !== listingId));
         alert("Listing deleted successfully.");
       } catch (err) {
@@ -63,19 +66,49 @@ const handleDeleteClick = async (e, listingId) => {
     }
   };
 
-    const [itemToEdit, setItemToEdit] = useState(null); 
-
-    // 2. Modifica la función del botón
-    const handleEditClick = (e, item) => {
-    e.stopPropagation(); // Evita que se abra el modal de vista detallada
-    setItemToEdit(item);  // Guardamos el objeto completo para pasárselo al modal de edición
-    };
+  // Opens the editing modal layer payload
+  const handleEditClick = (e, item) => {
+    e.stopPropagation(); // Prevents opening the detail card modal
+    setItemToEdit(item);  // Save the targeted database record context
+  };
 
   // Truncate logic for descriptions
   const truncateText = (text, maxLength = 80) => {
     if (!text) return "No description provided.";
     if (text.length <= maxLength) return text;
     return `${text.substring(0, maxLength)}...`;
+  };
+
+  // NEW: Controller handler to fetch active chat channels assigned to this item post (now based on messages)
+  const handleToggleChatsMenu = async (e, listingId) => {
+    e.stopPropagation(); // Stop parent modal propagation clicks
+    
+    if (activeDropdownId === listingId) {
+      setActiveDropdownId(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://88.200.63.148:30096/food-listings/${listingId}/chats`);
+      if (response.ok) {
+        const data = await response.json();
+        setActiveChats(data); // Expecting array of unique chat users: [{ buyer_id, first_name, last_name }]
+        setActiveDropdownId(listingId);
+      }
+    } catch (err) {
+      console.error("Error running chat logs menu fetching processing:", err);
+    }
+  };
+
+  // NEW: Navigation dispatcher sending safe cross parameters into the bilateral room
+  const handleOpenPrivateChat = (e, listing, chatInfo) => {
+    e.stopPropagation();
+    const listingId = listing.id;
+    const buyerId = chatInfo.buyer_id; // TARGET: Explicit user ID from the message logs query
+    const title = encodeURIComponent(`${listing.title} - Chat with ${chatInfo.first_name}`);
+    const image = encodeURIComponent(listing.image_url || "");
+
+    navigate(`/messages?listingId=${listingId}&buyerId=${buyerId}&title=${title}&image=${image}`);
   };
 
   // Guard clause: If no user is logged in
@@ -94,13 +127,8 @@ const handleDeleteClick = async (e, listingId) => {
   // CRITICAL FILTER: Only display listings that belong to the logged-in user
   const myItems = listings.filter((item) => item.user_id === user.id);
 
-
-const handleAcceptRequest = async (e, item) => {
+  const handleAcceptRequest = async (e, item) => {
     e.stopPropagation();
-    
-    // Logging data structure to inspect what fields are returned by the server
-    console.log("Inspecting item object data on click:", item);
-
     if (!item.request_id) {
       alert(`Error: request_id is missing or undefined! Value: ${item.request_id}`);
       return;
@@ -127,27 +155,53 @@ const handleAcceptRequest = async (e, item) => {
 
   const handleRejectRequest = async (e, item) => {
     e.stopPropagation();
-
     if (!item.request_id) {
       alert("Error: Request ID not found for this listing.");
       return;
     }
 
     try {
-      // Hit the real backend patch endpoint to reject and release the post
       const response = await fetch(`http://88.200.63.148:30096/requests/${item.request_id}/reject`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ food_listing_id: item.id }) // Pass listing ID to release it
+        body: JSON.stringify({ food_listing_id: item.id }) 
       });
 
       if (!response.ok) throw new Error("Could not reject the claim.");
 
-      // Reset state back to available so buttons swap back seamlessly
       setListings(prev => prev.map(el => el.id === item.id ? { ...el, status: "available", request_id: null } : el));
       alert("Request rejected. The food item is listed as available again.");
     } catch (err) {
       alert(err.message);
+    }
+  };
+
+  const handleCompleteRequest = async (e, item) => {
+    e.stopPropagation(); 
+    if (!item.request_id) {
+      alert("Error: Missing target request reference metadata link.");
+      return;
+    }
+
+    const confirmed = window.confirm("Confirm handover? This marks the food as successfully collected by the requester.");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`http://88.200.63.148:30096/requests/${item.request_id}/complete`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ food_listing_id: item.id }) 
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Could not execute the transaction completion.");
+      }
+
+      setListings(prev => prev.map(el => el.id === item.id ? { ...el, status: "completed" } : el));
+      alert("Transaction successfully archived. The requester can now leave a profile review!");
+    } catch (err) {
+      alert(`Operation failed: ${err.message}`);
     }
   };
 
@@ -168,7 +222,6 @@ const handleAcceptRequest = async (e, item) => {
           </div>
         ) : (
           myItems.map((item) => (
-            /* FIX: Cleaned classnames to prevent style-bleed or overlap interference */
             <div key={item.id} className="myfood-card" onClick={() => setSelectedListing(item)}>
               
               {/* Left Side: Image Container */}
@@ -186,7 +239,7 @@ const handleAcceptRequest = async (e, item) => {
                   <h3 className="card-title">{item.title || "Untitled"}</h3>
                   <span className={`myfood-status status-${(item.status || "available").toLowerCase()}`}>
                     {item.status || "Available"}
-                </span>
+                  </span>
                 </div>
 
                 <p className="card-description-label">Description:</p>
@@ -197,7 +250,7 @@ const handleAcceptRequest = async (e, item) => {
                   )}
                 </p>
 
-                {/* Unified layout meta details layout banner wrapper */}
+                {/* Unified layout meta details wrapper */}
                 <div className="myfood-meta-row">
                   <p><strong>Quantity:</strong> {item.quantity}</p>
                   {item.expiration_date && (
@@ -205,29 +258,75 @@ const handleAcceptRequest = async (e, item) => {
                   )}
                 </div>
 
-                {/* Management actions panel aligned perfectly at the baseline border layout */}
-                {/* Render dynamic action flows based on the current live state of the listing */}
-                <div className="myfood-actions">
-                    {item.status === "requested" ? (
-                    <>
-                        {/* FIX: Pass the complete item object into the handlers */}
-                        <button onClick={(e) => handleAcceptRequest(e, item)} className="myfood-accept-btn">
-                        Accept Claim
-                        </button>
-                        <button onClick={(e) => handleRejectRequest(e, item)} className="myfood-reject-btn">
-                        Reject
-                        </button>
-                    </>
+                {/* ATTACHMENT ACTION BUTTON */}
+                <div style={{ marginTop: "8px", marginBottom: "8px" }}>
+                  <button 
+                    onClick={(e) => handleToggleChatsMenu(e, item.id)} 
+                    className="message-btn"
+                    style={{ background: "#2b2d42", color: "#ffffff", padding: "6px 12px", display: "inline-flex", alignItems: "center", gap: "5px" }}
+                  >
+                    💬 View Active Chats
+                  </button>
+                </div>
+
+                {/* CHATS DROPDOWN VIEWPORT INJECTION CONTAINER */}
+                {activeDropdownId === item.id && (
+                  <div className="chats-dropdown-container" onClick={(e) => e.stopPropagation()} style={{ background: "#f8fafc", padding: "10px", borderRadius: "6px", border: "1px solid #cbd5e1", marginTop: "5px", marginBottom: "10px" }}>
+                    <p style={{ margin: "0 0 8px 0", fontSize: "0.82rem", fontWeight: "bold", color: "#64748b" }}>Active Chat Channels:</p>
+                    {activeChats.length === 0 ? (
+                      <p style={{ margin: 0, fontSize: "0.8rem", color: "#94a3b8", fontStyle: "italic" }}>No chat history found for this item yet.</p>
                     ) : (
-                    <>
-                        <button onClick={(e) => handleEditClick(e, item)} className="myfood-edit-btn">
-                        Edit
-                        </button>
-                        <button onClick={(e) => handleDeleteClick(e, item.id)} className="myfood-delete-btn">
-                        Remove Post
-                        </button>
-                    </>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                        {activeChats.map((chat) => (
+                          <div 
+                            key={chat.buyer_id} // FIXED: Using buyer_id as the key mapping token
+                            onClick={(e) => handleOpenPrivateChat(e, item, chat)}
+                            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 10px", background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "4px", cursor: "pointer" }}
+                          >
+                            <span style={{ fontSize: "0.85rem", fontWeight: "500" }}>👤 {chat.first_name} {chat.last_name}</span>
+                            <span style={{ fontSize: "0.72rem", color: "#2b2d42", fontWeight: "bold" }}>Open Chat &rarr;</span>
+                          </div>
+                        ))}
+                      </div>
                     )}
+                  </div>
+                )}
+
+                {/* Management actions panel rendered dynamically based on status state flows */}
+                <div className="myfood-actions">
+                  {item.status === "requested" && (
+                    <>
+                      <button onClick={(e) => handleAcceptRequest(e, item)} className="myfood-accept-btn">
+                        Accept Claim
+                      </button>
+                      <button onClick={(e) => handleRejectRequest(e, item)} className="myfood-reject-btn">
+                        Reject
+                      </button>
+                    </>
+                  )}
+
+                  {item.status === "reserved" && (
+                    <button onClick={(e) => handleCompleteRequest(e, item)} className="myfood-complete-btn" style={{ backgroundColor: "#2b2d42", color: "#ffffff" }}>
+                      Mark as Collected
+                    </button>
+                  )}
+
+                  {item.status === "completed" && (
+                    <span className="completed-handover-badge" style={{ color: "#618a7f", fontWeight: "600", fontSize: "0.9rem" }}>
+                      Handed Over ✓
+                    </span>
+                  )}
+
+                  {(item.status === "available" || !item.status) && (
+                    <>
+                      <button onClick={(e) => handleEditClick(e, item)} className="myfood-edit-btn">
+                        Edit
+                      </button>
+                      <button onClick={(e) => handleDeleteClick(e, item.id)} className="myfood-delete-btn">
+                        Remove Post
+                      </button>
+                    </>
+                  )}
                 </div>
 
               </div>
@@ -241,17 +340,18 @@ const handleAcceptRequest = async (e, item) => {
         listing={selectedListing} 
         onClose={() => setSelectedListing(null)} 
       />
-        {itemToEdit && (
-    <PostFood 
-        isOpen={itemToEdit !== null}
-        user={user}
-        editItem={itemToEdit}
-        onClose={() => setItemToEdit(null)}
-        onSuccess={() => {
+
+      {itemToEdit && (
+        <PostFood 
+          isOpen={itemToEdit !== null}
+          user={user}
+          editItem={itemToEdit}
+          onClose={() => setItemToEdit(null)}
+          onSuccess={() => {
             fetchListings(); 
-        }}
-    />
-    )}
+          }}
+        />
+      )}
     </main>
   );
 }

@@ -1,10 +1,22 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { allFoodListings, foodListingById, createFoodListing, deleteFoodListing, updateFoodListing } from "../db/database.js";
+import { 
+  allFoodListings, 
+  foodListingById, 
+  createFoodListing, 
+  deleteFoodListing, 
+  updateFoodListing,
+  getRequestersByListing // Added from database models to serve active chats mapping queries
+} from "../db/database.js";
 
 const router = Router();
 
-const getAllFoodListings = async (req: Request, res: Response, next: NextFunction) => {
+/* =========================================================
+   1. CONTROLLER FUNCTIONS (IMMEDIATE ROUTE HANDLERS)
+   ========================================================= */
+
+const getFoodListings = async (_req: Request, res: Response, next: NextFunction) => {
   try {
+    // FIXED: Invoking allFoodListings which now carries the active relational request_id tokens
     const listings = await allFoodListings(); 
     res.status(200).json(listings);
   } catch (error) {
@@ -31,7 +43,6 @@ const getFoodListingById = async (req: Request, res: Response, next: NextFunctio
     next(error);
   }
 };
-
 
 const postFoodListing = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -76,7 +87,6 @@ const removeFoodListing = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    // This function seamlessly handles listings with 0 requests AND listings with multiple requests
     const queryResult = await deleteFoodListing(listingId);
 
     if (queryResult.affectedRows === 1) {
@@ -96,8 +106,6 @@ const removeFoodListing = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-// Asegúrate de importar 'updateFoodListing' al principio del archivo junto a las demás funciones de db
-
 const editFoodListing = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const listingId = Number(req.params.id);
@@ -111,7 +119,6 @@ const editFoodListing = async (req: Request, res: Response, next: NextFunction) 
       return;
     }
 
-    // Process parameters cleanly
     const queryResult = await updateFoodListing(
       listingId,
       title?.trim(),
@@ -139,11 +146,36 @@ const editFoodListing = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
+// Fetch all active request transactions to map isolated private chat options
+const fetchListingChatsMenu = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const listingId = Number(req.params.id);
 
-router.put("/:id", editFoodListing); // OR router.patch("/:id", editFoodListing)
-router.delete("/:id", removeFoodListing);
-router.get("/", getAllFoodListings);
+    if (isNaN(listingId)) {
+      res.status(400).json({
+        success: false,
+        message: "A valid food listing ID parameter is required.",
+      });
+      return;
+    }
+
+    const activeChats = await getRequestersByListing(listingId);
+    res.status(200).json(activeChats);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/* =========================================================
+   2. EXPRESS ROUTER ATTACHMENTS
+   ========================================================= */
+
+// FIXED: Cleaned redundant controllers and set direct structural hierarchy maps
+router.get("/", getFoodListings);
 router.get("/:id", getFoodListingById);
+router.get("/:id/chats", fetchListingChatsMenu); // New isolated dynamic channel router endpoint mapping
 router.post("/", postFoodListing);
+router.put("/:id", editFoodListing);
+router.delete("/:id", removeFoodListing);
 
 export default router;

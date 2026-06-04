@@ -67,9 +67,22 @@ export default function FoodNearMe({ user }) {
     }
   };
 
-  const handleMessageClick = (e, userId) => {
-    e.stopPropagation(); // Prevents opening the modal
-    alert(`Opening chat with user ID: ${userId}`);
+  const handleMessageClick = (e, listing) => {
+    e.stopPropagation();
+    
+    if (!listing || !listing.id) {
+      alert("Error: Listing data is missing.");
+      return;
+    }
+    
+    // STRATEGIC FIX: Since the current logged-in user is browsing, they are the buyer
+    const listingId = listing.id;
+    const buyerId = user.id; // Your logged-in user context object
+    const title = encodeURIComponent(listing.title || "Food Chat");
+    const image = encodeURIComponent(listing.image_url || "");
+    
+    // Route navigation string carrying both required tracking parameters safely
+    navigate(`/messages?listingId=${listingId}&buyerId=${buyerId}&title=${title}&image=${image}`);
   };
 
   // Helper function to truncate long descriptions gracefully
@@ -112,7 +125,9 @@ export default function FoodNearMe({ user }) {
               <div className="card-content">
                 <div className="card-header">
                   <h3 className="card-title">{item.title || "Untitled"}</h3>
-                  <span className="card-rating">Rating: x.x</span>
+                  <div className="card-rating">
+                    <span>⭐ {Number(item.user_rating_avg).toFixed(1)} / 5.0</span>
+                  </div>
                 </div>
 
                 <p className="card-posted-by">
@@ -146,7 +161,7 @@ export default function FoodNearMe({ user }) {
                   {user ? (
                     <div className="logged-in-actions">
                       <div className="action-left">
-                        <button onClick={(e) => handleMessageClick(e, item.user_id)} className="message-btn">
+                        <button onClick={(e) => handleMessageClick(e, item)} className="message-btn">
                           Message
                         </button>
                       </div>

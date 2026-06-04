@@ -9,7 +9,6 @@
     box-sizing: border-box;
 }
 
-/* FIX: Eliminada la declaración duplicada de .listings-grid que tenías arriba */
 .myfood-page-container .listings-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -181,6 +180,22 @@
 .myfood-delete-btn:hover {
     background: #cb2d3a;
     transform: translateY(-1px);
+}
+
+.message-btn {
+	appearance: none;
+	border: 0;
+	box-sizing: border-box;
+	display: block;
+	border-radius: 14px;
+	padding: 12px 18px;
+	font: inherit;
+	font-weight: 700;
+	cursor: pointer;
+	transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+	background: #614051;
+	color: #ffffff;
+	border: 1px solid rgba(97, 138, 127, 0.22);
 }
 
 /* Empty fallback area layout */

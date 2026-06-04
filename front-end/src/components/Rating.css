@@ -1,0 +1,72 @@
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(43, 45, 66, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+    position: relative;
+}
+.modal-close-x {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    color: #8d99ae;
+    cursor: pointer;
+}
+.modal-content h3 { margin: 0 0 6px 0; color: #2b2d42; }
+.modal-subtitle { margin: 0 0 24px 0; font-size: 0.92rem; color: #6c757d; }
+.modal-form { display: flex; flex-direction: column; gap: 20px; }
+
+/* Estilos de las Estrellas integradas */
+.modal-stars-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background-color: #f8f9fa;
+    padding: 12px 16px;
+    border-radius: 10px;
+}
+.stars-row { display: flex; gap: 4px; }
+.modal-star-token {
+    font-size: 1.6rem;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    user-select: none;
+}
+.modal-star-token:hover { transform: scale(1.2); }
+.modal-star-token.filled { color: #ffb703; }
+.modal-star-token.empty { color: #cbd5e1; }
+.score-hint { font-size: 0.88rem; font-weight: 600; color: #4a4e69; }
+
+.modal-input-group { display: flex; flex-direction: column; gap: 8px; }
+.modal-input-group label { font-size: 0.88rem; font-weight: 600; color: #2b2d42; }
+.modal-input-group textarea {
+    padding: 12px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    outline: none;
+    resize: none;
+    background-color: #f8f9fa;
+}
+.modal-input-group textarea:focus { border-color: #618a7f; background-color: #ffffff; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; }
+.modal-actions button { padding: 10px 20px; font-size: 0.92rem; font-weight: 600; border-radius: 10px; cursor: pointer; border: none; }
+.btn-cancel { background-color: #e9ecef; color: #495057; }
+.btn-submit { background-color: #618a7f; color: #ffffff; }

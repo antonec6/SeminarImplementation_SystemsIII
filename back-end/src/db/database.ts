@@ -51,9 +51,17 @@ export const createUser = async (
   return result;
 };
 
-export const getUserById = async (id: number): Promise<UserLogin[]> => {
-  const query = "SELECT * FROM user WHERE id = ?"; 
-  const [rows] = await pool.query<UserLogin[]>(query, [id]);
+export const getUserById = async (id: number): Promise<any[]> => {
+  const query = `
+    SELECT 
+      u.*,
+      IFNULL(AVG(r.score), 0) AS rating_avg
+    FROM user u
+    LEFT JOIN rating r ON u.id = r.to_user_id
+    WHERE u.id = ?
+    GROUP BY u.id
+  `;
+  const [rows] = await pool.query(query, [id]);
   return rows;
 };
 
@@ -81,21 +89,41 @@ export interface FoodListingRow extends RowDataPacket {
 }
 
 export const allFoodListings = async (): Promise<FoodListingRow[]> => {
-  // CRITICAL JOIN: We fetch r.id as 'request_id' so the owner knows exactly 
-  // which request record to accept or reject from the MyFood interface
   const query = `
     SELECT 
       fl.*, 
       u.first_name, 
       u.last_name,
-      r.id AS request_id
+      r.id AS request_id,
+      IFNULL(avg_rating.avg_score, 0) AS user_rating_avg  -- <--- Inyecta el promedio
     FROM food_listing fl
     JOIN user u ON fl.user_id = u.id
-    LEFT JOIN request r ON fl.id = r.food_listing_id AND r.status = 'pending'
+    LEFT JOIN request r ON fl.id = r.food_listing_id AND r.status != 'rejected'
+    LEFT JOIN (
+      SELECT to_user_id, AVG(score) AS avg_score 
+      FROM rating 
+      GROUP BY to_user_id
+    ) avg_rating ON fl.user_id = avg_rating.to_user_id
     ORDER BY fl.id DESC
   `;
-  const [rows] = await pool.query(query);
+  const [rows] = await pool.query<FoodListingRow[]>(query);
   return rows;
+};
+
+export const getAllFoodListingsWithRequests = async (): Promise<any[]> => {
+  // We use LEFT JOIN to bring the request.id as request_id if someone claimed it
+  const query = `
+    SELECT 
+      fl.*,
+      r.id AS request_id,
+      r.user_id AS requester_user_id
+    FROM food_listing fl
+    LEFT JOIN request r ON fl.id = r.food_listing_id AND r.status != 'rejected'
+    ORDER BY fl.created_at DESC
+  `;
+  
+  const [rows] = await pool.query(query);
+  return rows as any[];
 };
 
 export const foodListingById = async (id: number): Promise<FoodListingRow[]> => {
@@ -128,7 +156,6 @@ export const createFoodListing = async (
     userId
   ]);
   return result;
-
 };
 
 export const deleteFoodListing = async (
@@ -178,7 +205,7 @@ export const updateFoodListing = async (
 
 export interface RequestRow extends RowDataPacket {
   id: number;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'completed';
   created_at: string;
   user_id: number;
   food_listing_id: number;
@@ -198,7 +225,6 @@ export const createRequest = async (
   await pool.query(insertRequestQuery, [userId, foodListingId]);
 
   // CRITICAL STEP: Automatically update the food listing status to 'requested'
-  // This instantly hides it from FoodNearMe based on the client filter
   const updateListingQuery = `
     UPDATE food_listing 
     SET status = 'requested' 
@@ -217,9 +243,14 @@ export const allRequestsWithFoodDetails = async (): Promise<RequestRow[]> => {
       r.user_id, 
       r.food_listing_id,
       f.title,
-      f.image_url
+      f.image_url,
+      f.status AS food_status,
+      f.user_id AS owner_id,
+      -- Comprobamos si ya existe una review hecha por este usuario para este listing
+      IF(rat.id IS NOT NULL, 1, 0) AS already_rated
     FROM request r
     INNER JOIN food_listing f ON r.food_listing_id = f.id
+    LEFT JOIN rating rat ON r.food_listing_id = rat.food_listing_id AND r.user_id = rat.from_user_id
     ORDER BY r.created_at DESC
   `;
   const [rows] = await pool.query<RequestRow[]>(query);
@@ -246,4 +277,116 @@ export const rejectRequestTransaction = async (
   
   // 2. Set the listing back to 'available' so other users can see and claim it
   await pool.query("UPDATE food_listing SET status = 'available' WHERE id = ?", [foodListingId]);
+};
+
+export const completeRequestTransaction = async (requestId: number, foodListingId: number): Promise<void> => {
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    // FIXED: We do NOT update request status to 'completed' since its ENUM doesn't allow it.
+    // Instead, we leave the request as is, or we can optionally do nothing to it.
+    // We only update the main food_listing to 'completed' which is fully supported!
+    await connection.query("UPDATE food_listing SET status = 'completed' WHERE id = ?", [foodListingId]);
+
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+};
+
+// Fetch all active request transactions for a single food listing to map active chats
+export const getRequestersByListing = async (listingId: number): Promise<any[]> => {
+  const query = `
+    SELECT DISTINCT m.user_id AS buyer_id, u.first_name, u.last_name
+    FROM message m
+    JOIN user u ON m.user_id = u.id
+    JOIN food_listing fl ON m.food_listing_id = fl.id
+    WHERE m.food_listing_id = ? 
+      AND m.user_id != fl.user_id -- Exclude the owner of the food from the buyers list
+  `;
+  const [rows] = await pool.query(query, [listingId]);
+  return rows;
+};
+
+// ========================================================
+// 5. MESSAGES
+// ========================================================
+
+export interface MessageRow extends RowDataPacket {
+  id: number;
+  content: string;
+  sent_at: Date;
+  user_id: number;
+  food_listing_id: number;
+  first_name?: string; 
+}
+
+// 1. Fetch historical message logs strictly exchanged between the listing owner and this specific buyer
+export const getPrivateMessages = async (listingId: number, buyerId: number): Promise<any[]> => {
+  const query = `
+    SELECT m.*, u.first_name, u.last_name 
+    FROM message m
+    JOIN user u ON m.user_id = u.id
+    JOIN food_listing fl ON m.food_listing_id = fl.id
+    WHERE m.food_listing_id = ? 
+      AND (m.user_id = ? OR m.user_id = fl.user_id) -- Either sent by the buyer OR sent by the listing owner
+    ORDER BY m.sent_at ASC
+  `;
+  const [rows] = await pool.query(query, [listingId, buyerId]);
+  return rows;
+};
+
+// 2. Insert message entries utilizing the existing food_listing_id structure
+export const createMessage = async (content: string, userId: number, listingId: number): Promise<void> => {
+  const query = `
+    INSERT INTO message (content, user_id, food_listing_id, sent_at) 
+    VALUES (?, ?, ?, NOW())
+  `;
+  await pool.query(query, [content, userId, listingId]);
+};
+
+export const getMessagesByListing = async (
+  foodListingId: number
+): Promise<MessageRow[]> => {
+  const query = `
+    SELECT 
+      m.*, 
+      u.first_name, 
+      u.last_name
+    FROM message m
+    JOIN user u ON m.user_id = u.id
+    WHERE m.food_listing_id = ?
+    ORDER BY m.sent_at ASC
+  `;
+  const [rows] = await pool.query(query, [foodListingId]);
+  return rows as MessageRow[];
+};
+
+/* =========================================================
+   6. RATINGS
+   ========================================================= */
+
+export const createRating = async (
+  score: number,
+  comment: string | null,
+  foodListingId: number,
+  fromUserId: number,
+  toUserId: number
+): Promise<any> => {
+  const query = `
+    INSERT INTO rating (score, comment, food_listing_id, from_user_id, to_user_id)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+  const [result] = await pool.query(query, [score, comment, foodListingId, fromUserId, toUserId]);
+  return result;
+};
+
+export const checkAlreadyRated = async (foodListingId: number, fromUserId: number): Promise<boolean> => {
+  const query = `SELECT id FROM rating WHERE food_listing_id = ? AND from_user_id = ?`;
+  const [rows]: any = await pool.query(query, [foodListingId, fromUserId]);
+  return rows.length > 0;
 };

@@ -3,8 +3,9 @@ import {
   createRequest, 
   allRequestsWithFoodDetails, 
   acceptRequestTransaction, 
-  rejectRequestTransaction 
-} from "../db/database.js"; // Standardized path matching your users architecture
+  rejectRequestTransaction,
+  completeRequestTransaction // Asegúrate de añadir/exportar esta función en tu database.ts
+} from "../db/database.js"; 
 
 const router = Router();
 
@@ -40,7 +41,7 @@ const submitRequest = async (req: Request, res: Response, next: NextFunction) =>
       message: "The food request could not be processed.",
     });
   } catch (error) {
-    next(error); // Forward database errors cleanly to your index.ts handler
+    next(error); 
   }
 };
 
@@ -67,7 +68,6 @@ const acceptRequest = async (req: Request, res: Response, next: NextFunction) =>
       return;
     }
 
-    // Execute safe isolated relational updates inside database.ts
     await acceptRequestTransaction(requestId, foodListingId);
 
     res.status(200).json({
@@ -92,12 +92,36 @@ const rejectRequest = async (req: Request, res: Response, next: NextFunction) =>
       return;
     }
 
-    // Execute database operations to release the food listing back to available
     await rejectRequestTransaction(requestId, foodListingId);
 
     res.status(200).json({
       success: true,
       message: "Request rejected successfully. Food is available again.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const completeRequest = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const requestId = Number(req.params.id);
+    const foodListingId = Number(req.body.food_listing_id);
+
+    if (isNaN(requestId) || isNaN(foodListingId)) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid request parameters or missing food_listing_id.",
+      });
+      return;
+    }
+
+    // Ejecuta la transacción en cascada dentro de tu archivo database.ts
+    await completeRequestTransaction(requestId, foodListingId);
+
+    res.status(200).json({
+      success: true,
+      message: "Transaction completed successfully. Food marked as collected.",
     });
   } catch (error) {
     next(error);
@@ -112,5 +136,6 @@ router.post("/", submitRequest);
 router.get("/", getRequests);
 router.patch("/:id/accept", acceptRequest);
 router.patch("/:id/reject", rejectRequest);
+router.patch("/:id/complete", completeRequest); // <--- Nuevo endpoint mapeado en el formato estándar
 
 export default router;

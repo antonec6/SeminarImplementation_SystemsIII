@@ -3,6 +3,8 @@ import express, { Request, Response, NextFunction } from "express";
 import usersRouter from "./routes/users.routes.js";
 import foodListingRouter from "./routes/food_listing.routes.js";
 import requestsRouter from "./routes/requests.routes.js";
+import messagesRouter from "./routes/messages.routes.js";
+import ratingsRouter from "./routes/ratings.routes.js";
 import cors from "cors";
 
 const app = express();
@@ -20,6 +22,8 @@ app.get("/", (_req: Request, res: Response) => {
 app.use("/users", usersRouter);        
 app.use("/food-listings", foodListingRouter);
 app.use("/requests", requestsRouter);
+app.use("/messages", messagesRouter);
+app.use("/ratings", ratingsRouter);
 
 app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error(error);

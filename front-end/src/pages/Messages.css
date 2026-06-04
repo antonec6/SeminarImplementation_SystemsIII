@@ -1,0 +1,230 @@
+/* =========================================================
+   WEB APPLICATION SINGLE COLUMN LAYOUT
+   ========================================================= */
+
+.chat-web-container-single {
+    display: flex;
+    flex-direction: column;
+    width: 70%;      
+    max-width: 100%;     
+    height: calc(100vh - 70px); 
+    margin: 0 auto;           
+    background-color: #ffffff;
+    border-radius: 0;    
+    box-shadow: none;        
+    overflow: hidden;
+}
+
+/* Fallback container framework */
+.chat-fallback {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px;
+    color: #2b2d42;
+}
+
+/* =========================================================
+   INTEGRATED SINGLE ROW HEADER BAR (EXPANDED SPECS)
+   ========================================================= */
+
+.chat-header-single {
+    display: flex;
+    align-items: center;
+    padding: 22px 36px;       /* Increased internal spacing padding for desktop layouts */
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    gap: 20px;
+}
+
+/* Bigger typography rules for headers matching global scale updates */
+.chat-header-single h2 {
+    font-size: 1.5rem;        /* Scaled up from 1.25rem to pop visually */
+    font-weight: 600;
+    color: #2b2d42;
+    margin: 0;
+}
+
+/* Scaled up avatar frame profile mask box */
+.header-avatar-box {
+    width: 50px;              /* Scaled up from 42px */
+    height: 50px;             /* Scaled up from 42px */
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f4f6f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Refined style rules for your back action button link */
+.header-back-btn {
+    background: none;
+    border: none;
+    color: #618a7f;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.header-back-btn:hover {
+    color: #4a6b62;
+    background-color: rgba(97, 138, 127, 0.08);
+}
+
+/* Small elegant vertical separator line between the button and avatar */
+.header-divider-pipe {
+    width: 1px;
+    height: 24px;
+    background-color: rgba(0, 0, 0, 0.1);
+    margin: 0 4px;
+}
+
+.header-mini-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.header-mini-placeholder {
+    font-size: 1.2rem;
+}
+
+.chat-header-single h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2b2d42;
+    margin: 0;
+}
+
+/* =========================================================
+   SCROLLABLE HISTORY MECHANICS
+   ========================================================= */
+
+.chat-box {
+    flex: 1;
+    padding: 28px;
+    overflow-y: auto;
+    background-color: #f4f6f6;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.chat-empty-state {
+    text-align: center;
+    margin: auto;
+    color: #8d99ae;
+    font-size: 0.95rem;
+}
+
+/* =========================================================
+   BUBBLES LAYOUT MAP RULES
+   ========================================================= */
+
+.message-row {
+    display: flex;
+    width: 100%;
+}
+
+.message-row.others { justify-content: flex-start; }
+.message-row.others .message-bubble {
+    background-color: #ffffff;
+    color: #2b2d42;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.message-row.mine { justify-content: flex-end; }
+.message-row.mine .message-bubble {
+    background-color: #618a7f;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 3px 10px rgba(97, 138, 127, 0.12);
+}
+
+.message-bubble {
+    max-width: 50%;           /* Keeps text tracks beautifully compact on massive displays */
+    padding: 12px 18px;       /* Extra reading comfort padding */
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.sender-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-bottom: 3px;
+    opacity: 0.85;
+}
+
+.message-content {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.message-time {
+    font-size: 0.68rem;
+    align-self: flex-end;
+    margin-top: 4px;
+    opacity: 0.65;
+}
+
+/* =========================================================
+   FOOTER BAR INPUT SPECS (FIXED INPUT FONT COLOR)
+   ========================================================= */
+
+.chat-input-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 36px;       /* Aligns padding seamlessly with the header structure above */
+    background-color: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* FIX: Solid high-contrast text color overrides light text bugs */
+.chat-input-area input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    color: #2b2d42; /* Crisp deep dark shade text visibility lock */
+    background-color: #f8f9fa;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.chat-input-area input:focus {
+    border-color: #618a7f;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(97, 138, 127, 0.12);
+}
+
+/* Black triangle action submit pointer icon button layout */
+.chat-input-area .send-btn {
+    background-color: #2b2d42;
+    color: #ffffff;
+    border: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.chat-input-area .send-btn:hover {
+    background-color: #1e2030;
+    transform: scale(1.03);
+}
